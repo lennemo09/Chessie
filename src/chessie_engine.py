@@ -58,10 +58,10 @@ class Piece:
         return addr
 
     def __repr__(self):
-        return self.type
+        return self.name
 
     def __str__(self):
-        return self.type
+        return self.name
 
 class State:
     def __init__(self,player_view=0):
