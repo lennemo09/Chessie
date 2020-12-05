@@ -97,9 +97,18 @@ class Move:
         self.src_col = src[1]
         self.dst_row = dst[0]
         self.dst_col = dst[1]
+        self.move_hash = src[0]*1000 + src[1]*100 + dst[0]*10 + dst[1]
 
         self.piece = board[self.src_row,self.src_col]
         self.capture = board[self.dst_row,self.dst_col]
+
+    def __eq__(self,other):
+        """
+        Checks if 2 move objects are the same
+        """
+        if isinstance(other, Move):
+            return self.move_hash == other.move_hash
+
 
     def get_notation(self):
         """
@@ -124,9 +133,21 @@ class State:
         self.moving_player = 0 # White moves first
         self.moves = 0 # Number of moves made so far
         self.history = [] # Keep track of moves made so far
+        self.kings = [(7,3,'w'),(0,3,'b')] # Keep track of kings' coordinates for mate checks [white,black] from white's view
 
     def get_moving_player(self):
         self.moving_player = self.moves % 2 # Even number: White's turn, odd number: Black's turn
+
+    def get_kings(self):
+        """
+        Return the kings' positions (White,Black)
+        """
+        if self.moving_player == 0:
+            assert self.kings[0][2] == 'w'
+            return (self.kings[0][::2],self.kings[1][::2])
+        else:
+            assert self.kings[1][2] == 'w'
+            return (self.kings[1][::2],self.kings[0][::2])
 
     def create_board(self,player_view=0):
         if player_view == 0:
@@ -162,11 +183,56 @@ class State:
         self.history.append(move) # Added move to log
         self.moves += 1
         self.moving_player = self.get_moving_player()
+        self.kings.reverse()
 
     def undo(self):
+        """
+        Undo last move.
+        """
         if len(self.history) > 0:
             move = self.history.pop()
             self.board[move.src_row,move.src_col] = move.piece
             self.board[move.dst_row,move.dst_col] = move.capture
             self.moves -= 1
             self.moving_player = self.get_moving_player()
+            self.kings.reverse()
+
+    def get_valid_moves(self):
+        """
+        Get all valid moves for the current player taking into account the opponent's possible moves in the next turn (cannot move if King is checked next turn.)
+        """
+        return self.get_all_moves()
+
+    def get_all_moves(self):
+        """
+        Get all legal moves for the current player.
+        """
+        moves = []
+
+        for row in range(len(self.board)):
+            for col in range(len(self.board[row])):
+                piece = self.board[row,col]
+                if piece != '---':
+                    color = piece.color
+                    type = piece.type
+                    if (color == 'w' and self.moving_player == 0) or (color == 'b' and self.moving_player == 1):
+                        self.get_piece_moves(row,col,piece,moves)
+        return moves
+
+
+    def get_piece_moves(self,row,col,piece,moves):
+        color = piece.color
+        type = piece.type
+
+        if type == 'p':
+            pass
+        elif type == 'n':
+            pass
+        elif type == 'r':
+            pass
+        elif type == 'b':
+            pass
+        elif type == 'q':
+            pass
+        elif type == 'k':
+            pass

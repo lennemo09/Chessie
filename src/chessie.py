@@ -101,10 +101,14 @@ def main():
     selected = () # User's last seletec tile (row,col)
     selection_buffer = [] # Store user's last selected tiles [src,dst]
 
+    valid_moves = state.get_valid_moves()
+    moved = False # Only updates  when user made a move, doesn't update every frame
+
     while running:
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 running = False
+
             elif e.type == pg.MOUSEBUTTONDOWN:
                 pos = pg.mouse.get_pos() # Add offset if extra GUI panels are added (mouse coord needs to be relative to the board's borders, not window's)
 
@@ -120,13 +124,23 @@ def main():
 
                 if len(selection_buffer) == 2: # 2 tiles selected -> Move
                     move = Move(selection_buffer[0], selection_buffer[1], state.board)
-                    print(move.get_notation())
-                    state.move_piece(move)
+
+                    if move in valid_moves:
+                        state.move_piece(move)
+                        print(move.get_notation())
+                        moved = True
                     selected = ()
                     selection_buffer = []
+
             elif e.type == pg.KEYDOWN:
                 if e.key == pg.K_z:
+                    print("Undid a move.")
                     state.undo()
+                    moved = True
+        if moved:
+            # Only update moves when the board changes
+            valid_moves = state.get_valid_moves()
+            moved = False
 
         draw_board(screen,state)
         clock.tick(FPS)
