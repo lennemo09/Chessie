@@ -124,6 +124,9 @@ def main():
                     state.move_piece(move)
                     selected = ()
                     selection_buffer = []
+            elif e.type == pg.KEYDOWN:
+                if e.key == pg.K_z:
+                    state.undo()
 
         draw_board(screen,state)
         clock.tick(FPS)

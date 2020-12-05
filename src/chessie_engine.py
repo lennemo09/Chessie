@@ -155,10 +155,18 @@ class State:
 
     def move_piece(self,move):
         """
-        Castle not handled.
+        Special moves like castling, promotions, etc. not handled.
         """
         self.board[move.src_row,move.src_col] = "---"
         self.board[move.dst_row,move.dst_col] = move.piece
         self.history.append(move) # Added move to log
         self.moves += 1
         self.moving_player = self.get_moving_player()
+
+    def undo(self):
+        if len(self.history) > 0:
+            move = self.history.pop()
+            self.board[move.src_row,move.src_col] = move.piece
+            self.board[move.dst_row,move.dst_col] = move.capture
+            self.moves -= 1
+            self.moving_player = self.get_moving_player()
