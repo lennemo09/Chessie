@@ -126,11 +126,12 @@ class Move:
 
 
 class State:
-    def __init__(self,player_view=0):
+    def __init__(self,player_view=0,size=8):
         """
         player_view: {0 = white's view; 1 = black's view}
         """
         self.board = self.create_board(player_view)
+        self.size = size
         self.player_view = player_view
         self.moving_player = 0 # White moves first
         self.moves = 0 # Number of moves made so far
@@ -239,16 +240,39 @@ class State:
         type = piece.type
 
         if type == 'p':
-            if self.moving_player == 0: # White Pawn
+            if self.moving_player == 0: # White pawn
                 if self.board[row-1,col] == "---":  # White pawn can only move up
                     moves.append(Move((row,col),(row-1,col),self.board))
                     if row == 6 and self.board[row-2,col] == "---":
                         moves.append(Move((row,col),(row-2,col),self.board))
-            elif self.moving_player == 1:
+                # White pawn capturing
+                if col-1 >= 0:
+                    tile = self.board[row-1,col-1]
+                    if tile != "---":
+                        if tile.color == 'b':
+                            moves.append(Move((row,col),(row-1,col-1),self.board))
+                if col+1 <= self.size-1:
+                    tile = self.board[row-1,col+1]
+                    if tile != "---":
+                        if tile.color == 'b':
+                            moves.append(Move((row,col),(row-1,col+1),self.board))
+
+            elif self.moving_player == 1: # Black pawn
                 if self.board[row+1,col] == "---":
                     moves.append(Move((row,col),(row+1,col),self.board))
                     if row == 1 and self.board[row+1,col] == "---":
                         moves.append(Move((row,col),(row+2,col),self.board))
+                # Black pawn capturing
+                if col-1 >= 0:
+                    tile = self.board[row+1,col-1]
+                    if tile != "---":
+                        if tile.color == 'w':
+                            moves.append(Move((row,col),(row+1,col-1),self.board))
+                if col+1 <= self.size-1:
+                    tile = self.board[row+1,col+1]
+                    if tile != "---":
+                        if tile.color == 'w':
+                            moves.append(Move((row,col),(row+1,col+1),self.board))
 
         elif type == 'n':
             pass
