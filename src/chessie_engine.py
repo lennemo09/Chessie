@@ -22,6 +22,8 @@ pieces_names = ["b_b", "b_k", "b_n", "b_p", "b_q", "b_r", "w_b", "w_k", "w_n", "
 
 pieces_types = ["b","k","n","p","q","r"]
 
+all_colors = ['w','b']
+
 class Piece:
     def __init__(self,name):
         if name not in pieces_names:
@@ -239,7 +241,7 @@ class State:
         color = piece.color
         type = piece.type
 
-        if type == 'p':
+        if type == 'p': # Should be using switch cases if Python has it.
             if self.moving_player == 0: # White pawn
                 if self.board[row-1,col] == "---":  # White pawn can only move up
                     moves.append(Move((row,col),(row-1,col),self.board))
@@ -274,8 +276,34 @@ class State:
                         if tile.color == 'w':
                             moves.append(Move((row,col),(row+1,col+1),self.board))
 
-        elif type == 'n':
-            pass
+        elif type == 'n': # Knight
+
+            enemy = all_colors[(self.moving_player+1) % len(all_colors)]
+
+            if row-1 >= 0 and col+2 <= self.size-1 and (self.board[row-1,col+2] == "---" or self.board[row-1,col+2].color == enemy):
+                moves.append(Move((row,col),(row-1,col+2),self.board))
+
+            if row-1 >= 0 and col-2 >= 0 and (self.board[row-1,col-2] == "---" or self.board[row-1,col-2].color == enemy):
+                moves.append(Move((row,col),(row-1,col-2),self.board))
+
+            if row-2 >= 0 and col+1 <= self.size-1 and (self.board[row-2,col+1] == "---" or self.board[row-2,col+1].color == enemy):
+                moves.append(Move((row,col),(row-2,col+1),self.board))
+
+            if row-2 >= 0 and col-1 >= 0 and (self.board[row-2,col-1] == "---" or self.board[row-2,col-1].color == enemy):
+                moves.append(Move((row,col),(row-2,col-1),self.board))
+
+            if row+1 <= self.size-1 and col+2 <= self.size-1 and (self.board[row+1,col+2] == "---" or self.board[row+1,col+2].color == enemy):
+                moves.append(Move((row,col),(row+1,col+2),self.board))
+
+            if row+1 <= self.size-1 and col-2 >= 0 and (self.board[row+1,col-2] == "---" or self.board[row+1,col-2].color == enemy):
+                moves.append(Move((row,col),(row+1,col-2),self.board))
+
+            if row+2 <= self.size-1 and col+1 <= self.size-1 and (self.board[row+2,col+1] == "---" or self.board[row+2,col+1].color == enemy):
+                moves.append(Move((row,col),(row+2,col+1),self.board))
+
+            if row+2 <= self.size-1 and col-1 >= 0 and (self.board[row+2,col-1] == "---" or self.board[row+2,col-1].color == enemy):
+                moves.append(Move((row,col),(row+2,col-1),self.board))
+
         elif type == 'r':
             pass
         elif type == 'b':
