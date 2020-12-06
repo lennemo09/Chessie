@@ -1,13 +1,13 @@
 # Chessie
 A playable Python GUI chess engine/game, with the goal of creating a base for making a reinforcement learnt chess AI.
 
-![Alt text](sprites/icons/chessie_banner.jpg?raw=true "Chessie.")
+![Banner](sprites/icons/chessie_banner.jpg?raw=true "Chessie.")
 
 # Motivation
 I wanted to make a chess AI that can play decently above an average player but since I do not know how to play chess very well, it would take me a very long time to make a heuristics chess bot, so I decided to let the bot learn how to play itself rather than trying to teach it what I don't know.
 It is also (kinda) my first GUI application so that was also a new learning experience.
 
-![Alt text](misc/demo_1.gif?raw=true "Demo.")
+![](misc/demo_1.gif)
 
 # Features so far
 * Player can only move at their correct turn.
