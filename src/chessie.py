@@ -129,8 +129,10 @@ def main():
                         state.move_piece(move)
                         print(move.get_notation())
                         moved = True
-                    selected = ()
-                    selection_buffer = []
+                        selected = ()
+                        selection_buffer = []
+                    else:
+                        selection_buffer =[selected]
 
             elif e.type == pg.KEYDOWN:
                 if e.key == pg.K_z:
