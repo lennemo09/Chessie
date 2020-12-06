@@ -192,6 +192,10 @@ class State:
         self.board[move.src_row,move.src_col] = "---"
         self.board[move.dst_row,move.dst_col] = move.piece
         self.history.append(move) # Added move to log
+
+        if move.piece.type == 'k':
+            self.kings[(self.moving_player) % len(self.kings)] = (move.dst_row,move.dst_col)
+
         self.moves += 1
         self.moving_player = self.get_moving_player()
 
@@ -205,7 +209,9 @@ class State:
             self.board[move.dst_row,move.dst_col] = move.capture
             self.moves -= 1
             self.moving_player = self.get_moving_player()
-            self.kings.reverse()
+
+            if move.piece.type == 'k':
+                self.kings[(self.moving_player) % len(self.kings)] = (move.src_row,move.src_col)
 
     def get_valid_moves(self):
         """

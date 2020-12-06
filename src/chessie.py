@@ -43,6 +43,11 @@ def load_sprites():
         SPRITES[col+'_light'] = pg.transform.scale(tile_light, (TILE_SIZE,TILE_SIZE))
         SPRITES[col+'_dark'] = pg.transform.scale(tile_dark, (TILE_SIZE,TILE_SIZE))
 
+    selected = pg.image.load("../sprites/pieces/square_selected.png".format(piece))
+    SPRITES['selected'] = pg.transform.scale(selected, (TILE_SIZE,TILE_SIZE))
+    valid = pg.image.load("../sprites/pieces/square_valid.png".format(piece))
+    SPRITES['valid'] = pg.transform.scale(valid, (TILE_SIZE,TILE_SIZE))
+
 
 def render_board(screen,theme=0):
     """
@@ -80,11 +85,26 @@ def render_tiles(screen,board):
                 screen.blit(SPRITES[piece_name], pg.Rect(col*TILE_SIZE, row*TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
 
-def draw_board(screen,state):
+def render_selection(screen,board,selection,valid_moves):
+    row = selection[0]
+    col = selection[1]
+    screen.blit(SPRITES['selected'], pg.Rect(col*TILE_SIZE, row*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+
+    if board[row,col] != '---':
+        for move in valid_moves:
+            if move.src_row == row and move.src_col == col:
+                new_row = move.dst_row
+                new_col = move.dst_col
+                screen.blit(SPRITES['valid'], pg.Rect(new_col*TILE_SIZE, new_row*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+
+
+def draw_board(screen,state,selection=(),valid_moves=[]):
     """
     Render graphics.
     """
     render_board(screen,THEME)
+    if selection != ():
+        render_selection(screen,state.board,selection,valid_moves)
     render_tiles(screen,state.board)
 
 
@@ -144,7 +164,7 @@ def main():
             valid_moves = state.get_valid_moves()
             moved = False
 
-        draw_board(screen,state)
+        draw_board(screen,state,selected,valid_moves)
         clock.tick(FPS)
         pg.display.flip()
 
