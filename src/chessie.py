@@ -6,6 +6,9 @@ MAIN DRIVER FOR CHESSIE.
 @ Found at: https://opengameart.org/content/chess-pieces-and-board-squares
 @
 @ PyGame introduction tutorial by Eddie Sharick: https://www.youtube.com/watch?v=EnYui0e73Rs
+@
+@ Chessie logo modified by me, based on the artworks:
+@ Knight from: https://www.klipartz.com/en/sticker-png-csqlu#google_vignette
 """
 
 from chessie_engine import *
@@ -13,6 +16,9 @@ import pygame as pg
 
 ## STANDARD PYGAME INITIALIZATION
 pg.init()
+pg.display.set_caption('Chessie')
+icon = pg.image.load("../sprites/icons/chessie_logo.png")
+pg.display.set_icon(icon)
 
 WINDOW_W = WINDOW_H = 512
 BOARD_SIZE = 8
