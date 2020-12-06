@@ -152,12 +152,13 @@ class State:
         """
         Return the kings' positions (White,Black)
         """
-        if self.moving_player == 0:
-            assert self.kings[0][2] == 'w'
-            return (self.kings[0][::2],self.kings[1][::2])
-        else:
-            assert self.kings[1][2] == 'w'
-            return (self.kings[1][::2],self.kings[0][::2])
+        return self.kings
+
+    def get_enemy_king(self):
+        return self.kings[(self.moving_player+1) % len(self.kings)]
+
+    def get_my_king(self):
+        return self.kings[(self.moving_player) % len(self.kings)]
 
     def create_board(self,player_view=0):
         if player_view == 0:
@@ -193,7 +194,6 @@ class State:
         self.history.append(move) # Added move to log
         self.moves += 1
         self.moving_player = self.get_moving_player()
-        self.kings.reverse()
 
     def undo(self):
         """
@@ -304,7 +304,7 @@ class State:
             if row+2 <= self.size-1 and col-1 >= 0 and (self.board[row+2,col-1] == "---" or self.board[row+2,col-1].color == enemy):
                 moves.append(Move((row,col),(row+2,col-1),self.board))
 
-        elif type == 'r':
+        elif type == 'r': # Rooks
             enemy = all_colors[(self.moving_player+1) % len(all_colors)]
 
             for new_col in range(col+1,self.size):
@@ -343,10 +343,28 @@ class State:
                 else:
                     break
 
-
-
         elif type == 'b':
-            pass
+            enemy = all_colors[(self.moving_player+1) % len(all_colors)]
+
+            north_east = list(zip(range(row-1,-1,-1),range(col+1,self.size)))
+            north_west = list(zip(range(row-1,-1,-1),range(col-1,-1,-1)))
+            south_east = list(zip(range(row+1,self.size),range(col+1,self.size)))
+            south_west = list(zip(range(row+1,self.size),range(col-1,-1,-1)))
+
+            diagonals = [north_east,north_west,south_east,south_west]
+            for diag in diagonals:
+                for tile in diag:
+                    new_row = tile[0]
+                    new_col = tile[1]
+
+                    if self.board[new_row,new_col] == '---':
+                        moves.append(Move((row,col),(new_row,new_col),self.board))
+                    elif self.board[new_row,new_col].color == enemy:
+                        moves.append(Move((row,col),(new_row,new_col),self.board))
+                        break
+                    else:
+                        break
+
         elif type == 'q':
             pass
         elif type == 'k':
