@@ -234,12 +234,15 @@ class State:
         return moves
 
 
-    def get_piece_moves(self,row,col,piece,moves):
+    def get_piece_moves(self,row,col,piece,moves,override=None):
         """
         Get valid moves for a given piece.
         """
         color = piece.color
-        type = piece.type
+        if override is None:
+            type = piece.type
+        else:
+            type = override
 
         if type == 'p': # Should be using switch cases if Python has it.
             if self.moving_player == 0: # White pawn
@@ -366,6 +369,8 @@ class State:
                         break
 
         elif type == 'q':
-            pass
+            self.get_piece_moves(row,col,piece,moves,'b')
+            self.get_piece_moves(row,col,piece,moves,'r')
+
         elif type == 'k':
             pass
