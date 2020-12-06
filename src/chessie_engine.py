@@ -109,6 +109,8 @@ class Move:
         if isinstance(other, Move):
             return self.move_hash == other.move_hash
 
+    def __repr__(self):
+        return str(self.move_hash)
 
     def get_notation(self):
         """
@@ -137,6 +139,11 @@ class State:
 
     def get_moving_player(self):
         self.moving_player = self.moves % 2 # Even number: White's turn, odd number: Black's turn
+        if self.moving_player == 0:
+            print("White's turn to move.")
+        else:
+            print("Black's turn to move.")
+        return self.moving_player
 
     def get_kings(self):
         """
@@ -209,23 +216,40 @@ class State:
         """
         moves = []
 
+        print("Getting moves.")
+
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
                 piece = self.board[row,col]
                 if piece != '---':
                     color = piece.color
                     type = piece.type
+                    #print(color,type,self.moving_player)
                     if (color == 'w' and self.moving_player == 0) or (color == 'b' and self.moving_player == 1):
                         self.get_piece_moves(row,col,piece,moves)
+                        #print(moves)
         return moves
 
 
     def get_piece_moves(self,row,col,piece,moves):
+        """
+        Get valid moves for a given piece.
+        """
         color = piece.color
         type = piece.type
 
         if type == 'p':
-            pass
+            if self.moving_player == 0: # White Pawn
+                if self.board[row-1,col] == "---":  # White pawn can only move up
+                    moves.append(Move((row,col),(row-1,col),self.board))
+                    if row == 6 and self.board[row-2,col] == "---":
+                        moves.append(Move((row,col),(row-2,col),self.board))
+            elif self.moving_player == 1:
+                if self.board[row+1,col] == "---":
+                    moves.append(Move((row,col),(row+1,col),self.board))
+                    if row == 1 and self.board[row+1,col] == "---":
+                        moves.append(Move((row,col),(row+2,col),self.board))
+
         elif type == 'n':
             pass
         elif type == 'r':
