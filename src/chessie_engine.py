@@ -305,7 +305,46 @@ class State:
                 moves.append(Move((row,col),(row+2,col-1),self.board))
 
         elif type == 'r':
-            pass
+            enemy = all_colors[(self.moving_player+1) % len(all_colors)]
+
+            for new_col in range(col+1,self.size):
+                if self.board[row,new_col] == '---':
+                    moves.append(Move((row,col),(row,new_col),self.board))
+                elif self.board[row,new_col].color == enemy:
+                    moves.append(Move((row,col),(row,new_col),self.board))
+                    break
+                else:
+                    break
+
+            for new_col in range(col-1,-1,-1):
+                if self.board[row,new_col] == '---':
+                    moves.append(Move((row,col),(row,new_col),self.board))
+                elif self.board[row,new_col].color == enemy:
+                    moves.append(Move((row,col),(row,new_col),self.board))
+                    break
+                else:
+                    break
+
+            for new_row in range(row+1,self.size):
+                if self.board[new_row,col] == '---':
+                    moves.append(Move((row,col),(new_row,col),self.board))
+                elif self.board[new_row,col].color == enemy:
+                    moves.append(Move((row,col),(new_row,col),self.board))
+                    break
+                else:
+                    break
+
+            for new_row in range(row-1,-1,-1):
+                if self.board[new_row,col] == '---':
+                    moves.append(Move((row,col),(new_row,col),self.board))
+                elif self.board[new_row,col].color == enemy:
+                    moves.append(Move((row,col),(new_row,col),self.board))
+                    break
+                else:
+                    break
+
+
+
         elif type == 'b':
             pass
         elif type == 'q':
