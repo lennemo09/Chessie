@@ -242,7 +242,7 @@ class State:
         if override is None:
             type = piece.type
         else:
-            type = override
+            type = override # Override is used by the queens to get (bishops && rooks)-like moves
 
         if type == 'p': # Should be using switch cases if Python has it.
             if self.moving_player == 0: # White pawn
@@ -283,29 +283,17 @@ class State:
 
             enemy = all_colors[(self.moving_player+1) % len(all_colors)]
 
-            if row-1 >= 0 and col+2 <= self.size-1 and (self.board[row-1,col+2] == "---" or self.board[row-1,col+2].color == enemy):
-                moves.append(Move((row,col),(row-1,col+2),self.board))
+            L_shape = [(row-1,col+2),(row-1,col-2),(row-2,col+1),(row-2,col-1),(row+1,col+2),(row+1,col-2),(row+2,col+1),(row+2,col-1)]
 
-            if row-1 >= 0 and col-2 >= 0 and (self.board[row-1,col-2] == "---" or self.board[row-1,col-2].color == enemy):
-                moves.append(Move((row,col),(row-1,col-2),self.board))
+            for tile in L_shape:
+                new_row = tile[0]
+                new_col = tile[1]
 
-            if row-2 >= 0 and col+1 <= self.size-1 and (self.board[row-2,col+1] == "---" or self.board[row-2,col+1].color == enemy):
-                moves.append(Move((row,col),(row-2,col+1),self.board))
-
-            if row-2 >= 0 and col-1 >= 0 and (self.board[row-2,col-1] == "---" or self.board[row-2,col-1].color == enemy):
-                moves.append(Move((row,col),(row-2,col-1),self.board))
-
-            if row+1 <= self.size-1 and col+2 <= self.size-1 and (self.board[row+1,col+2] == "---" or self.board[row+1,col+2].color == enemy):
-                moves.append(Move((row,col),(row+1,col+2),self.board))
-
-            if row+1 <= self.size-1 and col-2 >= 0 and (self.board[row+1,col-2] == "---" or self.board[row+1,col-2].color == enemy):
-                moves.append(Move((row,col),(row+1,col-2),self.board))
-
-            if row+2 <= self.size-1 and col+1 <= self.size-1 and (self.board[row+2,col+1] == "---" or self.board[row+2,col+1].color == enemy):
-                moves.append(Move((row,col),(row+2,col+1),self.board))
-
-            if row+2 <= self.size-1 and col-1 >= 0 and (self.board[row+2,col-1] == "---" or self.board[row+2,col-1].color == enemy):
-                moves.append(Move((row,col),(row+2,col-1),self.board))
+                if (new_row in range(self.size)) and (new_col in range(self.size)):
+                    if self.board[new_row,new_col] == '---':
+                        moves.append(Move((row,col),(new_row,new_col),self.board))
+                    elif self.board[new_row,new_col].color == enemy:
+                        moves.append(Move((row,col),(new_row,new_col),self.board))
 
         elif type == 'r': # Rooks
             enemy = all_colors[(self.moving_player+1) % len(all_colors)]
@@ -346,7 +334,7 @@ class State:
                 else:
                     break
 
-        elif type == 'b':
+        elif type == 'b':   # Bishops
             enemy = all_colors[(self.moving_player+1) % len(all_colors)]
 
             north_east = list(zip(range(row-1,-1,-1),range(col+1,self.size)))
@@ -368,9 +356,21 @@ class State:
                     else:
                         break
 
-        elif type == 'q':
+        elif type == 'q':   # Queens
             self.get_piece_moves(row,col,piece,moves,'b')
             self.get_piece_moves(row,col,piece,moves,'r')
 
         elif type == 'k':
-            pass
+            enemy = all_colors[(self.moving_player+1) % len(all_colors)]
+
+            adjacents = [(row,col+1),(row,col-1),(row+1,col),(row-1,col),(row+1,col+1),(row+1,col-1),(row-1,col+1),(row-1,col-1)]
+
+            for tile in adjacents:
+                new_row = tile[0]
+                new_col = tile[1]
+
+                if (0 <= new_row) and (new_row <= self.size-1) and (0 <= new_col) and (new_col <= self.size-1):
+                    if self.board[new_row,new_col] == '---':
+                        moves.append(Move((row,col),(new_row,new_col),self.board))
+                    elif self.board[new_row,new_col].color == enemy:
+                        moves.append(Move((row,col),(new_row,new_col),self.board))
