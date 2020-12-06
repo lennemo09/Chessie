@@ -47,6 +47,8 @@ def load_sprites():
     SPRITES['selected'] = pg.transform.scale(selected, (TILE_SIZE,TILE_SIZE))
     valid = pg.image.load("../sprites/pieces/square_valid.png".format(piece))
     SPRITES['valid'] = pg.transform.scale(valid, (TILE_SIZE,TILE_SIZE))
+    capture = pg.image.load("../sprites/pieces/square_capture.png".format(piece))
+    SPRITES['capture'] = pg.transform.scale(capture, (TILE_SIZE,TILE_SIZE))
 
 
 def render_board(screen,theme=0):
@@ -95,8 +97,11 @@ def render_selection(screen,board,selection,valid_moves):
             if move.src_row == row and move.src_col == col:
                 new_row = move.dst_row
                 new_col = move.dst_col
-                screen.blit(SPRITES['valid'], pg.Rect(new_col*TILE_SIZE, new_row*TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
+                if board[new_row,new_col] == '---':
+                    screen.blit(SPRITES['valid'], pg.Rect(new_col*TILE_SIZE, new_row*TILE_SIZE, TILE_SIZE, TILE_SIZE))
+                else:
+                    screen.blit(SPRITES['capture'], pg.Rect(new_col*TILE_SIZE, new_row*TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
 def draw_board(screen,state,selection=(),valid_moves=[]):
     """
