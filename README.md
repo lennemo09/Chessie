@@ -1,5 +1,5 @@
 # Chessie
-A playable Python GUI chess engine/game, with the goal of creating a base for making a reinforcement learnt chess AI.
+A playable Python GUI chess engine/game, with the goal of creating a base for making a self-learning chess AI.
 
 ![Banner](sprites/icons/chessie_banner.jpg?raw=true "Chessie.")
 
@@ -26,7 +26,7 @@ It is also (kinda) my first GUI application so that was also a new learning expe
 > JohnPablok's improved Cburnett chess set.
 > Found at: https://opengameart.org/content/chess-pieces-and-board-squares
 
-* PyGame introduction tutorial by Eddie Sharick.
+* PyGame Chess introduction tutorial by Eddie Sharick.
 > Found at: https://www.youtube.com/watch?v=EnYui0e73Rs
 
 * Chessie logo modified by me, based on the artwork:
