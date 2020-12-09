@@ -18,6 +18,7 @@ It is also (kinda) my first GUI application so that was also a new learning expe
 * Functioning graphical rendering for selection, moves and captures highlighting.
 
 # To-do
+* Enable Pawn Promotion, Castling and En Passant.
 * Create an actual game with game over rules (when one king dies).
 * Most important: A functioning machine learning framework.
 
