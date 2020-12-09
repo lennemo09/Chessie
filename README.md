@@ -1,5 +1,5 @@
 # Chessie
-A playable Python GUI chess engine/game, with the goal of creating a base for making a reinforcement learnt chess AI.
+A playable Python GUI chess engine/game, with the goal of creating a base for making a self-learning chess AI.
 
 ![Banner](sprites/icons/chessie_banner.jpg?raw=true "Chessie.")
 
