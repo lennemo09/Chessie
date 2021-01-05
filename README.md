@@ -7,17 +7,18 @@ A playable Python GUI chess engine/game, with the goal of creating a base for ma
 I wanted to make a chess AI that can play decently above an average player but since I do not know how to play chess very well, it would take me a very long time to make a heuristics chess bot, so I decided to let the bot learn how to play itself rather than trying to teach it what I don't know.
 It is also (kinda) my first GUI application so that was also a new learning experience.
 
+## GUI demo (King is on the wrong side in the GIF, fixed in the game 😂):
 ![](misc/demo_1.gif)
 
 # Features so far
 * Player can only move at their correct turn.
 * Undo.
-* Pieces moves legally.
-* Working legal moves generation.
-* Functioning UI rendering (including selection, moves and captures highlighting).
+* All pieces can only move legally.
+* Working legal moves generation with efficient pins/checks validation.
+* Functioning graphical rendering for selection, moves and captures highlighting.
 
 # To-do
-* Add mate checks for safe move generations (efficiently).
+* Enable Pawn Promotion, Castling and En Passant.
 * Create an actual game with game over rules (when one king dies).
 * Most important: A functioning machine learning framework.
 
