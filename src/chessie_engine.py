@@ -103,11 +103,11 @@ class Move:
 
         self.piece = board[self.src_row,self.src_col]
         self.capture = board[self.dst_row,self.dst_col]
+        self.enpassant_capture = board[self.src_row,self.dst_col]
 
-        if (self.piece != '---') and ((self.piece.type == 'p' and self.piece.color == 'w' and self.dst_row == 0) or (self.piece.type == 'p' and self.piece.color == 'b' and self.dst_row == 7)):
-            self.promotion = True
-        else:
-            self.promotion = False
+        self.enpassant = False
+
+        self.promotion = ((self.piece != '---') and ((self.piece.type == 'p' and self.piece.color == 'w' and self.dst_row == 0) or (self.piece.type == 'p' and self.piece.color == 'b' and self.dst_row == 7)))
 
     def __eq__(self,other):
         """
@@ -131,6 +131,9 @@ class Move:
         """
         return self.cols_to_files[self.player][col] + self.rows_to_ranks[self.player][row]
 
+    def set_enpassant(self):
+        self.enpassant = True
+        self.capture = self.enpassant_capture
 
 class State:
     def __init__(self,player_view=0,size=8):
@@ -148,6 +151,7 @@ class State:
         self.pins = []
         self.checks = []
         self.checked = [False,False]
+        self.enpassant_square = ()
 
     def get_moving_player(self):
         self.moving_player = self.moves % 2 # Even number: White's turn, odd number: Black's turn
@@ -195,12 +199,9 @@ class State:
         return board
 
     def move_piece(self,move):
-        """
-        Special moves like castling, promotions, etc. not handled.
-        """
+        #print(move.enpassant)
         self.board[move.src_row,move.src_col] = "---"
         self.board[move.dst_row,move.dst_col] = move.piece
-        self.history.append(move) # Added move to log
 
         if move.piece.type == 'k':
             self.kings[(self.moving_player) % len(self.kings)] = (move.dst_row,move.dst_col)
@@ -210,6 +211,18 @@ class State:
 
         if move.promotion:
             self.board[move.dst_row,move.dst_col] = Piece(move.piece.color + '_q')
+
+        if move.enpassant:
+            print("enpassant capture")
+            self.board[move.src_row,move.dst_col] = '---'
+
+        if move.piece.type == 'p' and abs(move.src_row - move.dst_row) == 2:
+            self.enpassant_square = ((move.src_row + move.dst_row)//2,move.src_col)
+        else:
+            self.enpassant_square = ()
+
+        self.history.append(move) # Added move to log
+
 
     def undo(self):
         """
@@ -225,11 +238,22 @@ class State:
             if move.piece.type == 'k':
                 self.kings[(self.moving_player) % len(self.kings)] = (move.src_row,move.src_col)
 
+            # Undoing enpassant
+            if move.enpassant:
+                self.board[move.dst_row,move.dst_col] = '---'
+                self.board[move.src_row,move.dst_col] = move.capture
+                self.enpassant_square = (move.dst_row,move.dst_col)
+
+            #Undo 2-move pawn
+            if move.piece.type == 'p' and abs(move.src_row - move.dst_row) == 2:
+                self.enpassant_square = ()
+
     def get_valid_moves(self):
         """
         Get all valid moves for the current player taking into account the opponent's possible moves in the next turn (cannot move if King is checked next turn.)
         """
         moves = []
+        current_enpassant_square = self.enpassant_square
         self.checked[self.moving_player], self.pins, self.checks = self.get_pins_and_checks()
 
         #print("Pins:",self.pins)
@@ -269,6 +293,7 @@ class State:
         else:
             moves = self.get_all_moves()
 
+        self.enpassant_square = current_enpassant_square
         return moves
 
     def get_all_moves(self):
@@ -325,12 +350,20 @@ class State:
                         if tile != "---":
                             if tile.color == 'b':
                                 moves.append(Move((row,col),(row-1,col-1),self.board))
+                        elif (row-1,col-1) == self.enpassant_square:
+                            new_move = Move((row,col),(row-1,col-1),self.board)
+                            new_move.set_enpassant()
+                            moves.append(new_move)
                 if col+1 <= self.size-1:
                     if not piece_pinned or pin_direction == (-1,1):
                         tile = self.board[row-1,col+1]
                         if tile != "---":
                             if tile.color == 'b':
                                 moves.append(Move((row,col),(row-1,col+1),self.board))
+                        elif (row-1,col+1) == self.enpassant_square:
+                            new_move = Move((row,col),(row-1,col+1),self.board)
+                            new_move.set_enpassant()
+                            moves.append(new_move)
 
             elif self.moving_player == 1: # Black pawn
                 if self.board[row+1,col] == "---":
@@ -345,12 +378,20 @@ class State:
                         if tile != "---":
                             if tile.color == 'w':
                                 moves.append(Move((row,col),(row+1,col-1),self.board))
+                        elif (row+1,col-1) == self.enpassant_square:
+                            new_move = Move((row,col),(row+1,col-1),self.board)
+                            new_move.set_enpassant()
+                            moves.append(new_move)
                 if col+1 <= self.size-1:
                     if not piece_pinned or pin_direction == (1,1):
                         tile = self.board[row+1,col+1]
                         if tile != "---":
                             if tile.color == 'w':
                                 moves.append(Move((row,col),(row+1,col+1),self.board))
+                        elif (row+1,col+1) == self.enpassant_square:
+                            new_move = Move((row,col),(row+1,col+1),self.board)
+                            new_move.set_enpassant()
+                            moves.append(new_move)
 
         elif type == 'n': # Knight
             piece_pinned = False

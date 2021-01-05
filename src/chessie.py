@@ -158,6 +158,8 @@ def main():
 
                     for i in range(len(valid_moves)):
                         if move == valid_moves[i]:
+                            if valid_moves[i].enpassant:
+                                move.set_enpassant()
                             state.move_piece(move)
                             print(move.get_notation())
                             moved = True
