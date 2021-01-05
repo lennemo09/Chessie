@@ -156,13 +156,14 @@ def main():
                 if len(selection_buffer) == 2: # 2 tiles selected -> Move
                     move = Move(selection_buffer[0], selection_buffer[1], state.board)
 
-                    if move in valid_moves:
-                        state.move_piece(move)
-                        print(move.get_notation())
-                        moved = True
-                        selected = ()
-                        selection_buffer = []
-                    else:
+                    for i in range(len(valid_moves)):
+                        if move == valid_moves[i]:
+                            state.move_piece(move)
+                            print(move.get_notation())
+                            moved = True
+                            selected = ()
+                            selection_buffer = []
+                    if not moved:
                         selection_buffer =[selected]
 
             elif e.type == pg.KEYDOWN:

@@ -104,6 +104,11 @@ class Move:
         self.piece = board[self.src_row,self.src_col]
         self.capture = board[self.dst_row,self.dst_col]
 
+        if (self.piece != '---') and ((self.piece.type == 'p' and self.piece.color == 'w' and self.dst_row == 0) or (self.piece.type == 'p' and self.piece.color == 'b' and self.dst_row == 7)):
+            self.promotion = True
+        else:
+            self.promotion = False
+
     def __eq__(self,other):
         """
         Checks if 2 move objects are the same
@@ -138,7 +143,7 @@ class State:
         self.moving_player = 0 # White moves first
         self.moves = 0 # Number of moves made so far
         self.history = [] # Keep track of moves made so far
-        self.kings = [(7,3),(0,3)] # Keep track of kings' coordinates for mate checks [white,black] from white's view
+        self.kings = [(7,4),(0,4)] # Keep track of kings' coordinates for mate checks [white,black] from white's view
 
         self.pins = []
         self.checks = []
@@ -167,25 +172,25 @@ class State:
     def create_board(self,player_view=0):
         if player_view == 0:
             board = np.array([
-            [Piece("b_r"),Piece("b_n"),Piece("b_b"),Piece("b_k"),Piece("b_q"),Piece("b_b"),Piece("b_n"),Piece("b_r")],
+            [Piece("b_r"),Piece("b_n"),Piece("b_b"),Piece("b_q"),Piece("b_k"),Piece("b_b"),Piece("b_n"),Piece("b_r")],
             [Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p")],
             ["---","---","---","---","---","---","---","---"],
             ["---","---","---","---","---","---","---","---"],
             ["---","---","---","---","---","---","---","---"],
             ["---","---","---","---","---","---","---","---"],
             [Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p")],
-            [Piece("w_r"),Piece("w_n"),Piece("w_b"),Piece("w_k"),Piece("w_q"),Piece("w_b"),Piece("w_n"),Piece("w_r")]
+            [Piece("w_r"),Piece("w_n"),Piece("w_b"),Piece("w_q"),Piece("w_k"),Piece("w_b"),Piece("w_n"),Piece("w_r")]
             ])
         else:
             board = np.array([
-            [Piece("w_r"),Piece("w_n"),Piece("w_b"),Piece("w_k"),Piece("w_q"),Piece("w_b"),Piece("w_n"),Piece("w_r")],
+            [Piece("w_r"),Piece("w_n"),Piece("w_b"),Piece("w_q"),Piece("w_k"),Piece("w_b"),Piece("w_n"),Piece("w_r")],
             [Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p"),Piece("w_p")],
             ["---","---","---","---","---","---","---","---"],
             ["---","---","---","---","---","---","---","---"],
             ["---","---","---","---","---","---","---","---"],
             ["---","---","---","---","---","---","---","---"],
             [Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p"),Piece("b_p")],
-            [Piece("b_r"),Piece("b_n"),Piece("b_b"),Piece("b_k"),Piece("b_q"),Piece("b_b"),Piece("b_n"),Piece("b_r")]
+            [Piece("b_r"),Piece("b_n"),Piece("b_b"),Piece("b_q"),Piece("b_k"),Piece("b_b"),Piece("b_n"),Piece("b_r")]
             ])
         return board
 
@@ -202,6 +207,9 @@ class State:
 
         self.moves += 1
         self.moving_player = self.get_moving_player()
+
+        if move.promotion:
+            self.board[move.dst_row,move.dst_col] = Piece(move.piece.color + '_q')
 
     def undo(self):
         """
@@ -224,12 +232,12 @@ class State:
         moves = []
         self.checked[self.moving_player], self.pins, self.checks = self.get_pins_and_checks()
 
-        print("Pins:",self.pins)
+        #print("Pins:",self.pins)
         king_row, king_col = self.get_my_king()
         king = self.board[king_row,king_col]
 
         if self.checked[self.moving_player]:
-            print("Is checked.")
+            #print("Is checked.")
             if len(self.checks) == 1: # 1 checked, we can block or dodge
                 moves = self.get_all_moves()
 
